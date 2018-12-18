@@ -7,9 +7,11 @@ from crawler.models import *
 def index(request):
     # View code here...
     if "query" in request.GET:
-        query = Query.objects.create(keyword=request.GET["query"]) # insert keyword into Query table
+        Query.objects.create(keyword=request.GET["query"]) # insert keyword into Query table
         while True:
-            if not query.keyword: # wait until crawl done
+            try:
+                Query.objects.get() # wait until crawl done
+            except:
                 return render(request, 'index.html', {"all_videos": (
                     AvgleQuery.objects.all(),
                     YoupornQuery.objects.all(),

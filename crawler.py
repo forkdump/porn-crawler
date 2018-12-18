@@ -188,10 +188,9 @@ if __name__ == "__main__":
     
     while True:
         cur.execute("select keyword from Query")
-        try:
-            query = cur.fetchone() # None
-        except:
-            query = cur.fetchone()[0] # (query,)[0]
+        query = cur.fetchone()
+        if query != None:
+            query = query[0] # cur.fetchone() = (keyword,)
 
         minute = time.localtime(time.time())[4]
         second = time.localtime(time.time())[5]
@@ -210,6 +209,8 @@ if __name__ == "__main__":
                     con.commit()
                     try:
                         data = result.get(timeout=10)
+                        if not data:
+                            raise Exception
                         print(f"{site}...ok")
                     except:
                         data = [("no result", "https://via.placeholder.com/500?text=no+result") for i in range(3)]
