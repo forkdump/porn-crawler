@@ -1,15 +1,15 @@
 # porn-crawler
 
-<h2>set up requirements</h2>
- pip install -r .\requirements.txt 
+**set up requirements**
+> pip install -r .\requirements.txt 
  
-<h2>keep running to update database</h1>
+**keep running to update database**
  cd porn-crawler 
  python crawler.py 
 
-<h2>open the server</h2>
+**open the server**
  cd porn-crawler\website\manage.py 
  python manage.py runserver 
 
-<h2>open the browser</h2>
+**open the browser**
  http://127.0.0.1:8000 
