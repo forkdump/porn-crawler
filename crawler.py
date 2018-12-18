@@ -14,7 +14,7 @@ SEARCH_NUMBER = 3
 OPTIONS = webdriver.ChromeOptions()
 OPTIONS.headless = True
 # INFO = 0, WARNING = 1, LOG_ERROR = 2, LOG_FATAL = 3.0
-OPTIONS.add_argument('log-level=2')
+OPTIONS.add_argument('log-level=3') # hide messages
 
 
 def get_avgle(query=None):
@@ -124,7 +124,7 @@ def get_popjav(query=None):
         res = requests.get("https://popjav.tv")
     soup = BeautifulSoup(res.text, "lxml")
     a_tags = soup.select("a.thumb")
-    driver = webdriver.Chrome("chromedriver.exe", options=OPTIONS)
+    driver = webdriver.Chrome("./chromedriver.exe", options=OPTIONS)
     title_and_url = []
     for a_tag in a_tags[:SEARCH_NUMBER]:
         res = requests.get(a_tag["href"])
@@ -185,32 +185,38 @@ SITES = ("Avgle", "Youporn", "Pornhub", "Tube85",
 if __name__ == "__main__":
     con = sqlite3.connect("./website/db.sqlite3")
     cur = con.cursor()
-
+    
     while True:
         cur.execute("select keyword from Query")
-        query = cur.fetchone()
+        try:
+            query = cur.fetchone() # None
+        except:
+            query = cur.fetchone()[0] # (query,)[0]
 
         minute = time.localtime(time.time())[4]
         second = time.localtime(time.time())[5]
         every_five_minute = not(minute % 5) and second == 0
 
         if query or every_five_minute:
-            print("\tprocessing")
+            if query:
+                print("\nDon't interrupt during searching.\n")
+            else:
+                print("\nDon't interrupt during the update.\n")
+
             with Pool() as pool:
-                results = [pool.apply_async(func, (query,)) for func in FUNCS]  # crawled every sites
+                results = [pool.apply_async(func, (query,)) for func in FUNCS]  # crawled with multiprocessing
                 for site, result in zip(SITES, results):
-                    cur.execute(f"delete from {site}")
+                    cur.execute(f"delete from {site}{'Query' if query else ''}") # delete from "site" or "siteQuery"
+                    con.commit()
                     try:
-                        data = result.get(timeout=5)
-                        print(f"{site}...ok.")
+                        data = result.get(timeout=10)
+                        print(f"{site}...ok")
                     except:
-                        data = (("no result", "https://via.placeholder.com/500") * 3)
+                        data = [("no result", "https://via.placeholder.com/500?text=no+result") for i in range(3)]
                         print(f"{site}...got some problems.")
-                    finally:
-                        cur.executemany(
-                            f"insert into {site}{'Query' if query else ''} values (null,?,?)", data)  # id = null
-                        con.commit()
-                print("\tfinished\n")
+                    cur.executemany(f"insert into {site}{'Query' if query else ''} values (null,?,?)", data)  # id = null
+                    con.commit()
                 cur.execute("delete from Query")
                 con.commit()
-                con.close()
+
+            print("\nDone\n")
