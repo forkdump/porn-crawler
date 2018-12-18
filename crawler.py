@@ -2,6 +2,7 @@ import base64
 import re
 from multiprocessing import Pool
 import sqlite3
+import time
 
 import requests
 from bs4 import BeautifulSoup
@@ -182,15 +183,34 @@ SITES = ("Avgle", "Youporn", "Pornhub", "Tube85",
          "Redtube", "Popjav", "Thisav", "Xvideos")
 
 if __name__ == "__main__":
-    con = sqlite3.connect("website/db.sqlite3")
+    con = sqlite3.connect("./website/db.sqlite3")
     cur = con.cursor()
 
-    with Pool() as pool:
-        results = [pool.apply_async(func, (None,)) for func in FUNCS]
-        for site, result in zip(SITES, results):
-            cur.execute(f"delete from {site}")
-            cur.executemany(f"insert into {site} values (null,?,?)", result.get(timeout=5))  # id = null
-            con.commit()
-            print(f"{site}...ok")
-        con.close()
-    print("done")
+    while True:
+        cur.execute("select keyword from Query")
+        query = cur.fetchone()
+
+        minute = time.localtime(time.time())[4]
+        second = time.localtime(time.time())[5]
+        every_five_minute = not(minute % 5) and second == 0
+
+        if query or every_five_minute:
+            print("\tprocessing")
+            with Pool() as pool:
+                results = [pool.apply_async(func, (query,)) for func in FUNCS]  # crawled every sites
+                for site, result in zip(SITES, results):
+                    cur.execute(f"delete from {site}")
+                    try:
+                        data = result.get(timeout=5)
+                        print(f"{site}...ok.")
+                    except:
+                        data = (("no result", "https://via.placeholder.com/500") * 3)
+                        print(f"{site}...got some problems.")
+                    finally:
+                        cur.executemany(
+                            f"insert into {site}{'Query' if query else ''} values (null,?,?)", data)  # id = null
+                        con.commit()
+                print("\tfinished\n")
+                cur.execute("delete from Query")
+                con.commit()
+                con.close()

@@ -48,4 +48,57 @@ class Xvideos(models.Model):
     url = models.TextField()
     class Meta:
         db_table = "Xvideos"
+
+class Query(models.Model):
+    keyword = models.TextField()
+    class Meta:
+        db_table = "Query"
+
+class AvgleQuery(models.Model):
+    title = models.TextField()
+    url = models.TextField()
+    class Meta:
+        db_table = "AvgleQuery"
+
+class YoupornQuery(models.Model):
+    title = models.TextField()
+    url = models.TextField()
+    class Meta:
+        db_table = "YoupornQuery"
+
+class PornhubQuery(models.Model):
+    title = models.TextField()
+    url = models.TextField()
+    class Meta:
+        db_table = "PornhubQuery"
+
+class Tube85Query(models.Model):
+    title = models.TextField()
+    url = models.TextField()
+    class Meta:
+        db_table = "Tube85Query"
+
+class RedtubeQuery(models.Model):
+    title = models.TextField()
+    url = models.TextField()
+    class Meta:
+        db_table = "RedtubeQuery"
+
+class PopjavQuery(models.Model):
+    title = models.TextField()
+    url = models.TextField()
+    class Meta:
+        db_table = "PopjavQuery"
+
+class ThisavQuery(models.Model):
+    title = models.TextField()
+    url = models.TextField()
+    class Meta:
+        db_table = "ThisavQuery"
+
+class XvideosQuery(models.Model):
+    title = models.TextField()
+    url = models.TextField()
+    class Meta:
+        db_table = "XvideosQuery"
         

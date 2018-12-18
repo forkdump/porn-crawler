@@ -1,11 +1,27 @@
 from django.shortcuts import render
-from .models import *
+from crawler.models import *
 
 # Create your views here.
+
+
 def index(request):
     # View code here...
-    return render(request, 'index.html', {
-        "all_videos": (
+    if "query" in request.GET:
+        query = Query.objects.create(keyword=request.GET["query"]) # insert keyword into Query table
+        while True:
+            if not query.keyword: # wait until crawl done
+                return render(request, 'index.html', {"all_videos": (
+                    AvgleQuery.objects.all(),
+                    YoupornQuery.objects.all(),
+                    PornhubQuery.objects.all(),
+                    Tube85Query.objects.all(),
+                    RedtubeQuery.objects.all(),
+                    PopjavQuery.objects.all(),
+                    ThisavQuery.objects.all(),
+                    XvideosQuery.objects.all()
+                )})
+    else:
+        return render(request, 'index.html', {"all_videos": (
             Avgle.objects.all(),
             Youporn.objects.all(),
             Pornhub.objects.all(),
