@@ -1,8 +1,9 @@
-import base64
 import re
-from multiprocessing import Pool
-import sqlite3
+import os
 import time
+import base64
+import sqlite3
+from multiprocessing import Pool
 
 import requests
 from bs4 import BeautifulSoup
@@ -183,7 +184,12 @@ SITES = ("Avgle", "Youporn", "Pornhub", "Tube85",
          "Redtube", "Popjav", "Thisav", "Xvideos")
 
 if __name__ == "__main__":
-    con = sqlite3.connect("./website/db.sqlite3")
+    first_execution = True
+
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.join(BASE_DIR, "website", "db.sqlite3")
+    
+    con = sqlite3.connect(db_path)
     cur = con.cursor()
     
     while True:
@@ -192,11 +198,10 @@ if __name__ == "__main__":
         if query != None:
             query = query[0] # cur.fetchone() = (keyword,)
 
-        minute = time.localtime(time.time())[4]
-        second = time.localtime(time.time())[5]
+        minute, second = time.localtime(time.time())[4: 6]
         every_five_minute = not(minute % 5) and second == 0
 
-        if query or every_five_minute:
+        if first_execution or query or every_five_minute:
             if query:
                 print("\nDon't interrupt during searching.\n")
             else:
@@ -211,13 +216,12 @@ if __name__ == "__main__":
                         data = result.get(timeout=10)
                         if not data:
                             raise Exception
+                        cur.executemany(f"insert into {site}{'Query' if query else ''} values (null,?,?)", data)  # id = null
+                        con.commit()
                         print(f"{site}...ok")
                     except:
-                        data = [("no result", "https://via.placeholder.com/500?text=no+result") for i in range(3)]
                         print(f"{site}...got some problems.")
-                    cur.executemany(f"insert into {site}{'Query' if query else ''} values (null,?,?)", data)  # id = null
-                    con.commit()
                 cur.execute("delete from Query")
                 con.commit()
-
             print("\nDone\n")
+        first_execution = False
