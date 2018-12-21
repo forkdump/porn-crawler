@@ -10,6 +10,7 @@
  
 **keep running to update database**
 > cd porn-crawler 
+
 > python crawler.py 
 
 
@@ -18,6 +19,7 @@
 
 **open the server**
 > cd porn-crawler\website\manage.py 
+
 > python manage.py runserver 
 
 
