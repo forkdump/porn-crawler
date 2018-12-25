@@ -15,7 +15,10 @@ SEARCH_NUMBER = 3
 OPTIONS = webdriver.ChromeOptions()
 OPTIONS.headless = True
 # INFO = 0, WARNING = 1, LOG_ERROR = 2, LOG_FATAL = 3.0
-OPTIONS.add_argument('log-level=3') # hide messages
+OPTIONS.add_argument('log-level=3')  # hide messages
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DB_PATH = os.path.join(BASE_DIR, "db.sqlite3")
 
 
 def get_avgle(query=None):
@@ -177,66 +180,74 @@ def get_xvideos(query=None):
         title_and_url.append((title, url))
     return title_and_url
 
-    
 # FUNCS = (get_avgle, get_youporn, get_pornhub, get_tube85,
 #          get_redtube, get_popjav, get_thisav, get_xvideos)
 # SITES = ("Avgle", "Youporn", "Pornhub", "Tube85",
 #          "Redtube", "Popjav", "Thisav", "Xvideos")
 
+
 # set up FUNCS and SITES
 FUNCS = []
 SITES = []
-globals_ = globals()
+globals_ = dict(globals())  # to avoid runtime error
 for func in globals_:
     if func.startswith("get_"):
         FUNCS.append(globals_[func])
-        SITES.append(func[4:]) # cut off "get_"
+        SITES.append(func[4:])  # cut off "get_"
 
 
 if __name__ == "__main__":
     first_execution = True
 
-    # set up database and table
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    db_path = os.path.join(base_dir, "db.sqlite3")
-    con = sqlite3.connect(db_path)
+    # set up tables
+    con = sqlite3.connect(DB_PATH)
     cur = con.cursor()
+    cur.execute(f"drop table if exists query")
+    con.commit()
+    cur.execute(f"create table query(keyword)")
     for site in SITES:
         cur.execute(f"drop table if exists {site}")
-        cur.commit()
+        cur.execute(f"drop table if exists {site}_query")
+        con.commit()
         cur.execute(f"create table {site}(title, url, logo)")
-        cur.commit()
-    
+        cur.execute(f"create table {site}_query(title, url, logo)")
+    con.commit()
+
     # main loop
     while True:
         cur.execute("select keyword from query")
-        query = cur.fetchone() # return (keyword,)
+        query = cur.fetchone()  # return (keyword,) or None
         if query:
-            query = query[0] 
+            query = query[0]
 
         minute, second = time.localtime(time.time())[4: 6]
         every_five_minute = not(minute % 5) and second == 0
 
         if first_execution or query or every_five_minute:
             if query:
-                print("\nPlease do not close during searching.\n")
+                print("\nPlease do not close during searching!\n")
             else:
-                print("\nPlease do not close during updating.\n")
+                print("\nPlease do not close during updating!\n")
 
             with Pool() as pool:
-                results = [pool.apply_async(func, (query,)) for func in FUNCS]  # crawled with multiprocessing
-                for site, result in zip(SITES, results): # iterate both at the same time
-                    cur.execute(f"delete from {site}{'_query' if query else ''}") # delete from "site" or "site_query"
+                # crawled with multiprocessing
+                results = [pool.apply_async(func, (query,)) for func in FUNCS]
+                # iterate both at the same time
+                for site, result in zip(SITES, results):
+                    # delete from "site" or "site_query"
+                    cur.execute(
+                        f"delete from {site}{'_query' if query else ''}")
                     con.commit()
                     try:
                         data = result.get(timeout=10)
                         if not data:
                             raise Exception
-                        cur.executemany(f"insert into {site}{'_query' if query else ''} values (?,?, 'logo/{site}')", data)
+                        cur.executemany(
+                            f"insert into {site}{'_query' if query else ''} values (?,?, 'logo/{site}')", data)
                         con.commit()
-                        print(f"{site}...okay.")
+                        print(f"{site}...success")
                     except:
-                        print(f"{site}...got some problems.")
+                        print(f"{site}...fail")
                 cur.execute("delete from query")
                 con.commit()
             print("\nDone.\n")
