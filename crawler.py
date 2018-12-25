@@ -177,51 +177,63 @@ def get_xvideos(query=None):
         title_and_url.append((title, url))
     return title_and_url
 
-
-FUNCS = (get_avgle, get_youporn, get_pornhub, get_tube85,
-         get_redtube, get_popjav, get_thisav, get_xvideos)
-SITES = ("Avgle", "Youporn", "Pornhub", "Tube85",
-         "Redtube", "Popjav", "Thisav", "Xvideos")
+    
+# FUNCS = (get_avgle, get_youporn, get_pornhub, get_tube85,
+#          get_redtube, get_popjav, get_thisav, get_xvideos)
+# SITES = ("Avgle", "Youporn", "Pornhub", "Tube85",
+#          "Redtube", "Popjav", "Thisav", "Xvideos")
 
 if __name__ == "__main__":
     first_execution = True
 
+    # set up FUNCS and SITES
+    FUNCS = []
+    SITES = []
+    globals_ = globals()
+    for func in globals_:
+        if func.startswith("get_"):
+            FUNCS.append(globals_[func])
+            SITES.append(func[4:]) # cut off "get_"
+
+    # set up database and table
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     db_path = os.path.join(BASE_DIR, "website", "db.sqlite3")
-    
     con = sqlite3.connect(db_path)
     cur = con.cursor()
-    
+    for site in SITES:
+        cur.execute(f"drop table if exists {site}")
+        cur.execute(f"create table {site}()")
+    # main loop
     while True:
-        cur.execute("select keyword from Query")
-        query = cur.fetchone()
-        if query != None:
-            query = query[0] # cur.fetchone() = (keyword,)
+        cur.execute("select keyword from query")
+        query = cur.fetchone() # return (keyword,)
+        if query:
+            query = query[0] 
 
         minute, second = time.localtime(time.time())[4: 6]
         every_five_minute = not(minute % 5) and second == 0
 
         if first_execution or query or every_five_minute:
             if query:
-                print("\nDon't interrupt during searching.\n")
+                print("\nPlease do not close during searching.\n")
             else:
-                print("\nDon't interrupt during the update.\n")
+                print("\nPlease do not close during updating.\n")
 
             with Pool() as pool:
                 results = [pool.apply_async(func, (query,)) for func in FUNCS]  # crawled with multiprocessing
                 for site, result in zip(SITES, results):
-                    cur.execute(f"delete from {site}{'Query' if query else ''}") # delete from "site" or "siteQuery"
+                    cur.execute(f"delete from {site}{'_query' if query else ''}") # delete from "site" or "siteQuery"
                     con.commit()
                     try:
                         data = result.get(timeout=10)
                         if not data:
                             raise Exception
-                        cur.executemany(f"insert into {site}{'Query' if query else ''} values (null,?,?)", data)  # id = null
+                        cur.executemany(f"insert into {site}{'_query' if query else ''} values (null,?,?)", data)  # id = null
                         con.commit()
-                        print(f"{site}...ok")
+                        print(f"{site}...okay.")
                     except:
                         print(f"{site}...got some problems.")
-                cur.execute("delete from Query")
+                cur.execute("delete from query")
                 con.commit()
-            print("\nDone\n")
+            print("\nDone.\n")
         first_execution = False

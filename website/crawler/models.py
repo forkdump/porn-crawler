@@ -5,100 +5,100 @@ class Avgle(models.Model):
     title = models.TextField()
     url = models.TextField()
     class Meta:
-        db_table = "Avgle"
+        db_table = "avgle"
 
 class Youporn(models.Model):
     title = models.TextField()
     url = models.TextField()
     class Meta:
-        db_table = "Youporn"
+        db_table = "youporn"
 
 class Pornhub(models.Model):
     title = models.TextField()
     url = models.TextField()
     class Meta:
-        db_table = "Pornhub"
+        db_table = "pornhub"
 
 class Tube85(models.Model):
     title = models.TextField()
     url = models.TextField()
     class Meta:
-        db_table = "Tube85"
+        db_table = "tube85"
 
 class Redtube(models.Model):
     title = models.TextField()
     url = models.TextField()
     class Meta:
-        db_table = "Redtube"
+        db_table = "redtube"
 
 class Popjav(models.Model):
     title = models.TextField()
     url = models.TextField()
     class Meta:
-        db_table = "Popjav"
+        db_table = "popjav"
 
 class Thisav(models.Model):
     title = models.TextField()
     url = models.TextField()
     class Meta:
-        db_table = "Thisav"
+        db_table = "thisav"
 
 class Xvideos(models.Model):
     title = models.TextField()
     url = models.TextField()
     class Meta:
-        db_table = "Xvideos"
+        db_table = "xvideos"
 
 class Query(models.Model):
     keyword = models.TextField()
     class Meta:
-        db_table = "Query"
+        db_table = "query"
 
 class AvgleQuery(models.Model):
     title = models.TextField()
     url = models.TextField()
     class Meta:
-        db_table = "AvgleQuery"
+        db_table = "avgle_query"
 
 class YoupornQuery(models.Model):
     title = models.TextField()
     url = models.TextField()
     class Meta:
-        db_table = "YoupornQuery"
+        db_table = "youporn_query"
 
 class PornhubQuery(models.Model):
     title = models.TextField()
     url = models.TextField()
     class Meta:
-        db_table = "PornhubQuery"
+        db_table = "pornhub_query"
 
 class Tube85Query(models.Model):
     title = models.TextField()
     url = models.TextField()
     class Meta:
-        db_table = "Tube85Query"
+        db_table = "tube85_query"
 
 class RedtubeQuery(models.Model):
     title = models.TextField()
     url = models.TextField()
     class Meta:
-        db_table = "RedtubeQuery"
+        db_table = "redtube_query"
 
 class PopjavQuery(models.Model):
     title = models.TextField()
     url = models.TextField()
     class Meta:
-        db_table = "PopjavQuery"
+        db_table = "popjav_query"
 
 class ThisavQuery(models.Model):
     title = models.TextField()
     url = models.TextField()
     class Meta:
-        db_table = "ThisavQuery"
+        db_table = "thisav_query"
 
 class XvideosQuery(models.Model):
     title = models.TextField()
     url = models.TextField()
     class Meta:
-        db_table = "XvideosQuery"
+        db_table = "xvideos_query"
         

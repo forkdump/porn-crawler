@@ -3,44 +3,23 @@ from crawler.models import *
 
 # Create your views here.
 def index(request):
-    # View code here...
     if "query" in request.GET:
         # insert keyword into Query table
         Query.objects.create(keyword=request.GET["query"])
         while True:
             try:
-                Query.objects.get()  # wait until crawl done
+                Query.objects.get() # wait until crawl done
             except:
-                return render(request, 'index.html', {
-                    "all_videos": (
-                        AvgleQuery.objects.all(),
-                        YoupornQuery.objects.all(),
-                        PornhubQuery.objects.all(),
-                        Tube85Query.objects.all(),
-                        RedtubeQuery.objects.all(),
-                        PopjavQuery.objects.all(),
-                        ThisavQuery.objects.all(),
-                        XvideosQuery.objects.all()
-                    ),
-                    "site": (
-                        "Avgle", 
-                        "Youporn", 
-                        "Pornhub", 
-                        "Tube85",
-                        "Redtube", 
-                        "Popjav", 
-                        "Thisav", 
-                        "Xvideos"
-                    )
-                })
+                all_videos = []
+                globals_ = globals()
+                for table in globals_:
+                    if table.endswith("Query") and globals_[table]:
+                        all_videos.append(globals_[table].objects.all())
+                return render(request, 'index.html', {"all_videos": all_videos})
     else:
-        return render(request, 'index.html', {"all_videos": (
-            Avgle.objects.all(),
-            Youporn.objects.all(),
-            Pornhub.objects.all(),
-            Tube85.objects.all(),
-            Redtube.objects.all(),
-            Popjav.objects.all(),
-            Thisav.objects.all(),
-            Xvideos.objects.all()
-        )})
+        all_videos = []
+        globals_ = globals()
+        for table in globals_:
+            if table.endswith("Query") and globals_[table]:
+                all_videos.append(globals_[table].objects.all())
+        return render(request, 'index.html', {"all_videos": all_videos})
