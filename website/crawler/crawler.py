@@ -183,26 +183,30 @@ def get_xvideos(query=None):
 # SITES = ("Avgle", "Youporn", "Pornhub", "Tube85",
 #          "Redtube", "Popjav", "Thisav", "Xvideos")
 
+# set up FUNCS and SITES
+FUNCS = []
+SITES = []
+globals_ = globals()
+for func in globals_:
+    if func.startswith("get_"):
+        FUNCS.append(globals_[func])
+        SITES.append(func[4:]) # cut off "get_"
+
+
 if __name__ == "__main__":
     first_execution = True
 
-    # set up FUNCS and SITES
-    FUNCS = []
-    SITES = []
-    globals_ = globals()
-    for func in globals_:
-        if func.startswith("get_"):
-            FUNCS.append(globals_[func])
-            SITES.append(func[4:]) # cut off "get_"
-
     # set up database and table
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    db_path = os.path.join(BASE_DIR, "website", "db.sqlite3")
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    db_path = os.path.join(base_dir, "db.sqlite3")
     con = sqlite3.connect(db_path)
     cur = con.cursor()
     for site in SITES:
         cur.execute(f"drop table if exists {site}")
-        cur.execute(f"create table {site}()")
+        cur.commit()
+        cur.execute(f"create table {site}(title, url, logo)")
+        cur.commit()
+    
     # main loop
     while True:
         cur.execute("select keyword from query")
@@ -221,14 +225,14 @@ if __name__ == "__main__":
 
             with Pool() as pool:
                 results = [pool.apply_async(func, (query,)) for func in FUNCS]  # crawled with multiprocessing
-                for site, result in zip(SITES, results):
-                    cur.execute(f"delete from {site}{'_query' if query else ''}") # delete from "site" or "siteQuery"
+                for site, result in zip(SITES, results): # iterate both at the same time
+                    cur.execute(f"delete from {site}{'_query' if query else ''}") # delete from "site" or "site_query"
                     con.commit()
                     try:
                         data = result.get(timeout=10)
                         if not data:
                             raise Exception
-                        cur.executemany(f"insert into {site}{'_query' if query else ''} values (null,?,?)", data)  # id = null
+                        cur.executemany(f"insert into {site}{'_query' if query else ''} values (?,?, 'logo/{site}')", data)
                         con.commit()
                         print(f"{site}...okay.")
                     except:
