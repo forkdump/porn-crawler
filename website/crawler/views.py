@@ -10,7 +10,7 @@ def index(request):
 
     if "query" in request.GET:
         sql = "select * from {}_query"
-        cur.execute(f"insert into query values (?)", request.GET["query"]) # insert keyword into query table
+        cur.execute(f"insert into query values (?)", (request.GET["query"],)) # insert keyword into query table
         con.commit()
         while True: # wait until crawl done
             cur.execute("select keyword from query")
@@ -20,8 +20,14 @@ def index(request):
     all_videos = []
     for site in SITES:
         cur.execute(sql.format(site))
-        videos = cur.fetchall()
+        table = cur.fetchall()
+        if not table:
+            continue
+
+        videos = []
+        for row in table:
+            videos.append({"title": row[0], "url": row[1], "logo": row[2]})
         if videos:
-            all_videos.append(videos)
+            all_videos.append(videos)    
     con.close()
-    return render(request, 'index.html', {"all_videos": all_videos})
+    return render(request, 'index.html', {"all_videos": all_videos}) # all_videos = [ [{}{}{}...] ... ]

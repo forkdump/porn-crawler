@@ -128,7 +128,7 @@ def get_popjav(query=None):
         res = requests.get("https://popjav.tv")
     soup = BeautifulSoup(res.text, "lxml")
     a_tags = soup.select("a.thumb")
-    driver = webdriver.Chrome("./chromedriver.exe", options=OPTIONS)
+    driver = webdriver.Chrome(options=OPTIONS)
     title_and_url = []
     for a_tag in a_tags[:SEARCH_NUMBER]:
         res = requests.get(a_tag["href"])
@@ -180,12 +180,6 @@ def get_xvideos(query=None):
         title_and_url.append((title, url))
     return title_and_url
 
-# FUNCS = (get_avgle, get_youporn, get_pornhub, get_tube85,
-#          get_redtube, get_popjav, get_thisav, get_xvideos)
-# SITES = ("Avgle", "Youporn", "Pornhub", "Tube85",
-#          "Redtube", "Popjav", "Thisav", "Xvideos")
-
-
 # set up FUNCS and SITES
 FUNCS = []
 SITES = []
@@ -225,9 +219,9 @@ if __name__ == "__main__":
 
         if first_execution or query or every_five_minute:
             if query:
-                print("\nPlease do not close during searching!\n")
+                print("\nPlease don't close during searching!\n")
             else:
-                print("\nPlease do not close during updating!\n")
+                print("\nPlease don't close during updating!\n")
 
             with Pool() as pool:
                 # crawled with multiprocessing
@@ -243,7 +237,7 @@ if __name__ == "__main__":
                         if not data:
                             raise Exception
                         cur.executemany(
-                            f"insert into {site}{'_query' if query else ''} values (?,?, 'logo/{site}')", data)
+                            f"insert into {site}{'_query' if query else ''} values (?,?, '{site}.jpg')", data)
                         con.commit()
                         print(f"{site}...success")
                     except:
