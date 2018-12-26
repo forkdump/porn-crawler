@@ -4,8 +4,6 @@
 > pip install -r requirements.txt 
  
 **keep running to update database**
-> cd porn-crawler 
-
 > python crawler.py 
 
 **run server**
