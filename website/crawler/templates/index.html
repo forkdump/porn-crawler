@@ -45,25 +45,23 @@
     <h1 class="my-4"></h1>
     <div class="row justify-content-around">
       {% for videos in all_videos %}
-      {% for video in videos %}
-      <div class="col-4 portfolio-item">
-        <div class="card h-100">
-          <div class="card-body">
-            {% if "embed" in video.url %}
-            <iframe style="width:100%; height:220px" scrolling="no" frameborder="0" allowfullscreen src="{{ video.url }}"></iframe>
-            {% else %}
-            <video style="width:100%; height:220px" controls>
-              <source src="{{ video.url }}" type="video/mp4">
-            </video>
-            {% endif %}
+        {% for video in videos %}
+          <div class="col-4 portfolio-item">
+            <div class="card h-100">
+              <div class="card-body">
+                {% if "embed" in video.url %}
+                  <iframe style="width:100%; height:220px" scrolling="no" frameborder="0" allowfullscreen src="{{ video.url }}"></iframe>
+                {% else %}
+                  <video style="width:100%; height:220px" controls>
+                    <source src="{{ video.url }}" type="video/mp4">
+                  </video>
+                {% endif %}
+              </div>
+              <div class="card-body">{{video.title}}</div>
+              <img src="./static/logo/{{video.logo}}" style="position:absolute; right:10px; bottom:10px; width:80px; height:30px">
+            </div>
           </div>
-          <div class="card-body">{{video.title}}</div>
-          <div style="position:absolute; right:10px; bottom:10px; width:50px; height:10px">
-            <img src="./static/logo/{{video.logo}}">
-          </div>
-        </div>
-      </div>
-      {% endfor %}
+        {% endfor %}
       {% endfor %}
     </div>
   </div>

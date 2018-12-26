@@ -224,20 +224,16 @@ if __name__ == "__main__":
                 print("\nPlease don't close during updating!\n")
 
             with Pool() as pool:
-                # crawled with multiprocessing
-                results = [pool.apply_async(func, (query,)) for func in FUNCS]
-                # iterate both at the same time
-                for site, result in zip(SITES, results):
-                    # delete from "site" or "site_query"
-                    cur.execute(
-                        f"delete from {site}{'_query' if query else ''}")
+                results = [pool.apply_async(func, (query,)) for func in FUNCS] # crawled with multiprocessing
+                for site, result in zip(SITES, results): # iterate both at the same time
+                    cur.execute(f"delete from {site}{'_query' if query else ''}") # delete from "site" or "site_query"
                     con.commit()
                     try:
                         data = result.get(timeout=10)
                         if not data:
                             raise Exception
                         cur.executemany(
-                            f"insert into {site}{'_query' if query else ''} values (?,?, '{site}.jpg')", data)
+                            f"insert into {site}{'_query' if query else ''} values (?,?,'{site}.jpg')", data)
                         con.commit()
                         print(f"{site}...success")
                     except:
