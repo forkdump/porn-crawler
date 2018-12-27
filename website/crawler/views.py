@@ -1,10 +1,10 @@
 from django.shortcuts import render
 import sqlite3
-from crawler.crawler import SITES
+from crawler.crawler import SITES, DB_PATH
 
 # Create your views here.
 def index(request):
-    con = sqlite3.connect("db.sqlite3")
+    con = sqlite3.connect(DB_PATH)
     cur = con.cursor()
     sql = "select * from {}"
 

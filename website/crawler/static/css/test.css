@@ -10,11 +10,13 @@
 .box-serch-icon{
     padding:5px 10px;
     color: #555555;
+    width:6%;
 }
 .box-serch-form{
     width: 50%;
-    border: solid 0.5px #555555;
+    border-bottom: solid 0.5px #555555;
     margin: 0 30% 0 20%;
+    position: relative;
 }
 .box-serch-form *{
     background-color: transparent;
@@ -22,14 +24,18 @@
     border: none;
 }
 .box-serch-form:focus-within{
-    box-shadow: 0px 2px 5px 2px rgba(255, 255, 255, 0.2);
+    border-bottom: solid 0.5px #ffaa00;
+}
+.box-serch-form input{
+    position: absolute;
+    width: 95%;
+    padding: 7px 15px;
 }
 input:focus{
     background-color: transparent;
     outline: none;
     color: white;
 }
-
 @media screen and (max-width: 992px) {
     .box-serch{
         margin: 0;
@@ -55,13 +61,11 @@ input:focus{
     width: 60px;
     height: 20px;
 }
-  
 .switch input { 
     opacity: 0;
     width: 0;
     height: 0;
-}
-  
+} 
 .slider {
     position: absolute;
     cursor: pointer;
@@ -73,37 +77,28 @@ input:focus{
     -webkit-transition: .4s;
     transition: .4s;
 }
-  
 .slider:before {
     position: absolute;
     content: "";
     height: 20px;
     width: 20px;
-    left: 4px;
+    left: 0px;
     bottom: 0px;
     background-color: white;
     -webkit-transition: .2s;
     transition: .2s;
 }
-  
 input:checked + .slider {
-    background-color: #2196F3;
+    background-color: #ffaa00;
 }
-  
-input:focus + .slider {
-    box-shadow: 0 0 1px #2196F3;
-}
-  
 input:checked + .slider:before {
-    -webkit-transform: translateX(26px);
-    -ms-transform: translateX(26px);
-    transform: translateX(26px);
+    -webkit-transform: translateX(34px);
+    -ms-transform: translateX(34px);
+    transform: translateX(34px);
 }
-
 .slider.round {
     border-radius: 34px;
 }
-  
 .slider.round:before {
     border-radius: 50%;
 }
