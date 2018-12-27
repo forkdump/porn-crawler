@@ -1,7 +1,14 @@
 function blur_switch()
 {
-    if (document.getElementByID('toggle').checked)
-        document.getElementsByName('video').className = 'card-body blur';
+    if (document.getElementById('switch').checked)
+        for (let index = 0; index < document.getElementsByName('video').length; index++) {
+            const element = document.getElementsByName('video')[index];
+            element.className = 'card-body blur';
+        }
     else
-        document.getElementsByName('video').className = 'card-body';
-}
+        for (let index = 0; index < document.getElementsByName('video').length; index++) {
+            const element = document.getElementsByName('video')[index];
+            element.className = 'card-body';
+        }
+    }
+
