@@ -10,7 +10,7 @@ def index(request):
 
     if "query" in request.GET:
         sql = "select * from {}_query"
-        cur.execute(f"insert into query values (?)", (request.GET["query"],)) # insert keyword into query table
+        cur.execute(f"insert into query values (?)", [request.GET["query"]]) # insert keyword into query table
         con.commit()
         while True: # wait until crawl done
             cur.execute("select keyword from query")

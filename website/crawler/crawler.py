@@ -220,11 +220,12 @@ if __name__ == "__main__":
         if first_execution or query or every_five_minute:
             if query:
                 print("\nPlease don't close during searching!\n")
+                print(f"query: '{query}'")
             else:
                 print("\nPlease don't close during updating!\n")
 
             with Pool() as pool:
-                results = [pool.apply_async(func, (query,)) for func in FUNCS] # crawled with multiprocessing
+                results = [pool.apply_async(func, [query]) for func in FUNCS] # crawled with multiprocessing
                 for site, result in zip(SITES, results): # iterate both at the same time
                     cur.execute(f"delete from {site}{'_query' if query else ''}") # delete from "site" or "site_query"
                     con.commit()
