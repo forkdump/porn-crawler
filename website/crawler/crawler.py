@@ -193,24 +193,15 @@ for func in globals_:
 if __name__ == "__main__":
     first_execution = True
 
-    # set up tables
+    # setup tables
     con = sqlite3.connect(DB_PATH)
     cur = con.cursor()
-    cur.execute(f"drop table if exists query")
-    con.commit()
-    cur.execute(f"create table query(keyword)")
-    for site in SITES:
-        cur.execute(f"drop table if exists {site}")
-        cur.execute(f"drop table if exists {site}_query")
-        con.commit()
-        cur.execute(f"create table {site}(title, url, logo)")
-        cur.execute(f"create table {site}_query(title, url, logo)")
-    con.commit()
 
     # main loop
     while True:
+        #get query
         cur.execute("select keyword from query")
-        query = cur.fetchone()  # return (keyword,) or None
+        query = cur.fetchone()  # return (id, keyword) or None
         if query:
             query = query[0]
 
@@ -218,28 +209,32 @@ if __name__ == "__main__":
         every_five_minute = not(minute % 5) and second == 0
 
         if first_execution or query or every_five_minute:
+            first_execution = False
+
             if query:
-                print("\nPlease don't close during searching!\n")
-                print(f"query: '{query}'")
+                print(f"\nPlease don't close during searching!\nSearching : {query}")
+                table = "videos_after_searched"
             else:
                 print("\nPlease don't close during updating!\n")
+                table = "videos"
 
             with Pool() as pool:
                 results = [pool.apply_async(func, [query]) for func in FUNCS] # crawled with multiprocessing
-                for site, result in zip(SITES, results): # iterate both at the same time
-                    cur.execute(f"delete from {site}{'_query' if query else ''}") # delete from "site" or "site_query"
-                    con.commit()
+
+                cur.execute(f"delete from {table}")
+                con.commit()
+
+                for site, result in zip(SITES, results):
                     try:
                         data = result.get(timeout=10)
                         if not data:
                             raise Exception
-                        cur.executemany(
-                            f"insert into {site}{'_query' if query else ''} values (?,?,'{site}.jpg')", data)
+                        cur.executemany(f"insert into {table} values (null, ?,?,'{site}.jpg')", data) # id, title, url, logo
                         con.commit()
-                        print(f"{site}...success")
+                        print(f"{site}... ok")
                     except:
-                        print(f"{site}...fail")
-                cur.execute("delete from query")
-                con.commit()
+                        print(f"{site}... fail")
+
+            cur.execute("delete from query")
+            con.commit()
             print("\nDone.\n")
-        first_execution = False
