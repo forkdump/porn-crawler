@@ -23,8 +23,7 @@ DB_PATH = os.path.join(BASE_DIR, "db.sqlite3")
 
 def get_avgle(query=None):
     if query:
-        res = requests.get(
-            f"https://api.avgle.com/v1/search/{query}/0?limit={SEARCH_NUMBER}")
+        res = requests.get(f"https://api.avgle.com/v1/search/{query}/0?limit={SEARCH_NUMBER}")
         res = res.json()
         title_and_url = []
         for video in res["response"]["videos"]:
@@ -65,8 +64,7 @@ def get_youporn(query=None):
 
 def get_pornhub(query=None):
     if query:
-        res = requests.get(
-            f"https://www.pornhub.com/video/search?search={query}")
+        res = requests.get(f"https://www.pornhub.com/video/search?search={query}")
     else:
         res = requests.get("https://www.pornhub.com")
     soup = BeautifulSoup(res.text, "lxml")
@@ -201,7 +199,7 @@ if __name__ == "__main__":
     while True:
         #get query
         cur.execute("select keyword from query")
-        query = cur.fetchone()  # return (id, keyword) or None
+        query = cur.fetchone()  # return (keyword,) or None
         if query:
             query = query[0]
 
