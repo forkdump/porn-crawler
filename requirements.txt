@@ -2,3 +2,4 @@ requests==2.18.4
 beautifulsoup4==4.6.0
 selenium==3.141.0
 Django==2.0.2
+lxml==4.2.4
