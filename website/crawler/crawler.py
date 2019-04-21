@@ -15,7 +15,7 @@ SEARCH_NUMBER = 3
 OPTIONS = webdriver.ChromeOptions()
 OPTIONS.headless = True
 # INFO = 0, WARNING = 1, LOG_ERROR = 2, LOG_FATAL = 3.0
-OPTIONS.add_argument('log-level=3')  # hide messages
+OPTIONS.add_argument('log-level=3')  # to hide messages
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB_PATH = os.path.join(BASE_DIR, "db.sqlite3")
