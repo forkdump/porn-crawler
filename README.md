@@ -1,6 +1,6 @@
 # 成人網站爬蟲
 
-![]()
+[demo.jpg](https://github.com/sunrimii/porn-crawler/blob/master/demo.jpg?raw=true)
 
 經深入爬取各大成人網站的首頁
 
@@ -13,9 +13,6 @@
 # 使用知識
 
 - 網頁爬蟲
-    - 正則表達式
-    - 瀏覽器自動化
-    - 編碼解析
 - 多行程
 - 後端
 
