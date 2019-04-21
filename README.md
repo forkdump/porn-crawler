@@ -1,6 +1,6 @@
 # 成人網站爬蟲
 
-[demo.jpg](https://github.com/sunrimii/porn-crawler/blob/master/demo.jpg?raw=true)
+![demo.jpg](https://github.com/sunrimii/porn-crawler/blob/master/demo.jpg?raw=true)
 
 經深入爬取各大成人網站的首頁
 
